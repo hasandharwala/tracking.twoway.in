@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TWO WAY — Precision Logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #F5F7FB;
+      --bg-secondary: #FFFFFF;
+      --bg-glass: rgba(255,255,255,0.72);
+      --accent: #ED1C24;
+      --accent-glow: rgba(237,28,36,0.18);
+      --text-primary: #0A2F7A;
+      --text-secondary: #5E6B85;
+      --border: rgba(10,47,122,0.08);
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --info: #38BDF8;
+      --transition: cubic-bezier(0.4,0,0.2,1);
+      --shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(180deg,#FFFFFF 0%,#F6F9FF 100%);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(237,28,36,0.04), transparent 50%),
+        linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
+      background-size: cover, 40px 40px, 40px 40px;
+      pointer-events: none;
+      z-index: -3;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E");
+      pointer-events:none;
+      z-index:-2;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: drift 60s infinite alternate ease-in-out;
+      z-index: -1;
+    }
+
+    .orb1 {
+      width: 300px;
+      height: 300px;
+      background: rgba(245,166,35,0.06);
+      top: 5%;
+      left: -5%;
+    }
+
+    .orb2 {
+      width: 250px;
+      height: 250px;
+      background: rgba(255,255,255,0.04);
+      bottom: 5%;
+      right: -5%;
+      animation-delay: -15s;
+    }
+
+    .orb3 {
+      width: 220px;
+      height: 220px;
+      background: rgba(245,166,35,0.04);
+      top: 50%;
+      right: 20%;
+      animation-delay: -30s;
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(60px,-40px) scale(1.08); }
+      100% { transform: translate(-40px,50px) scale(0.95); }
+    }
+
+    .glass {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 1rem 5%;
+      transition: all .3s var(--transition);
+      border-bottom: 1px solid transparent;
+    }
+
+    header.scrolled {
+      padding: .75rem 5%;
+      background: rgba(10,10,15,0.7);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+    }
+
+    .header-inner {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+    }
+
+    .logo {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .logo-top {
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      font-family:'Syne', sans-serif;
+      font-weight:800;
+      letter-spacing:1px;
+      font-size:1.25rem;
+    }
+
+    .logo-icon {
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      background: linear-gradient(135deg, var(--accent), #ffd27d);
+      display:grid;
+      place-items:center;
+      color:#000;
+      font-weight:900;
+    }
+
+    .tagline {
+      font-size:.7rem;
+      color:var(--text-secondary);
+      margin-left:2.6rem;
+    }
+
+    nav {
+      display:flex;
+      align-items:center;
+      gap:1.5rem;
+    }
+
+    nav a {
+      color:var(--text-secondary);
+      text-decoration:none;
+      transition:.25s;
+      font-size:.95rem;
+    }
+
+    nav a:hover { color: var(--text-primary); }
+
+    .admin-link {
+      font-size:.85rem;
+      opacity:.8;
+    }
+
+    .hero {
+      min-height:70vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:5rem 1rem 3rem;
+      text-align:center;
+    }
+
+    .pill {
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      padding:.6rem 1rem;
+      border-radius:999px;
+      background: var(--accent);
+      color:#000;
+      font-weight:700;
+      margin-bottom:1.5rem;
+      animation: fadeUp .6s ease forwards;
+    }
+
+    .pulse-dot {
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#000;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity:1; }
+      50% { transform: scale(1.6); opacity:.5; }
+    }
+
+    h1 {
+      font-family:'Syne', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      line-height:1.05;
+      margin-bottom:1rem;
+      animation: fadeUp .6s .1s both;
+    }
+
+    .accent { color: var(--accent); }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size:1.05rem;
+      max-width:680px;
+      margin-bottom:2rem;
+      animation: fadeUp .6s .2s both;
+    }
+
+    .tracking-card {
+      width:min(100%, 640px);
+      padding:1rem;
+      border-radius:20px;
+      position:relative;
+      overflow:hidden;
+      animation: fadeUp .6s .3s both;
+    }
+
+    .tracking-card::before {
+      content:'';
+      position:absolute;
+      inset:0;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+      transform: translateX(-100%);
+      transition: .8s;
+    }
+
+    .tracking-card:focus-within::before {
+      transform: translateX(100%);
+    }
+
+    .tracking-row {
+      display:flex;
+      gap:1rem;
+      align-items:center;
+    }
+
+    .tracking-row input {
+      flex:1;
+      height:58px;
+      background:transparent;
+      border:none;
+      color:var(--text-primary);
+      font-size:1rem;
+      outline:none;
+      padding:0 1rem;
+    }
+
+    .tracking-row input::placeholder {
+      color:var(--text-secondary);
+    }
+
+    button {
+      border:none;
+      cursor:pointer;
+      transition: .25s var(--transition);
+      font-family:inherit;
+    }
+
+    .track-btn {
+      min-width:140px;
+      height:58px;
+      border-radius:14px;
+      background: var(--accent);
+      color:#000;
+      font-weight:800;
+      letter-spacing:.5px;
+      box-shadow: 0 0 0 rgba(245,166,35,0);
+    }
+
+    .track-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px var(--accent-glow);
+    }
+
+    .track-meta {
+      margin-top:1rem;
+      display:flex;
+      justify-content:space-between;
+      gap:1rem;
+      flex-wrap:wrap;
+      color:var(--text-secondary);
+      font-size:.85rem;
+      padding:0 .5rem;
+    }
+
+    .stats {
+      margin-top:3rem;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1rem;
+      width:min(100%, 1000px);
+      animation: fadeUp .6s .4s both;
+    }
+
+    .stat-card {
+      padding:1.2rem;
+      border-radius:18px;
+      transition:.3s;
+    }
+
+    .stat-card:hover,
+    .info-card:hover,
+    .shipment-header:hover {
+      transform:translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    }
+
+    .stat-icon {
+      font-size:1.6rem;
+      margin-bottom:.7rem;
+    }
+
+    .results {
+      width:min(1200px, 92%);
+      margin:2rem auto 5rem;
+      display:none;
+      opacity:0;
+      transform:translateY(20px);
+      transition:.5s var(--transition);
+    }
+
+    .results.show {
+      display:block;
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .shipment-header {
+      padding:2rem;
+      border-radius:24px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:1.5rem;
+      margin-bottom:2rem;
+    }
+
+    .mono {
+      font-family:'JetBrains Mono', monospace;
+    }
+
+    .status-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.6rem 1rem;
+      border-radius:999px;
+      font-size:.8rem;
+      font-weight:700;
+      width:max-content;
+    }
+
+    .status-IN_TRANSIT,
+    .status-OUT_FOR_DELIVERY {
+      background: rgba(245,166,35,0.12);
+      color: var(--warning);
+    }
+
+    .status-DELIVERED {
+      background: rgba(34,197,94,0.12);
+      color: var(--success);
+    }
+
+    .status-BOOKED,
+    .status-PICKED_UP {
+      background: rgba(56,189,248,0.12);
+      color: var(--info);
+    }
+
+    .status-EXCEPTION {
+      background: rgba(239,68,68,0.12);
+      color: var(--danger);
+    }
+
+    .status-dot {
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:currentColor;
+      animation:pulse 1.6s infinite;
+    }
+
+    .route {
+      font-size:1.2rem;
+      font-weight:700;
+      margin:.8rem 0;
+    }
+
+    .chip-row {
+      display:flex;
+      gap:.6rem;
+      flex-wrap:wrap;
+      margin-top:1rem;
+    }
+
+    .chip {
+      padding:.5rem .9rem;
+      border-radius:999px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--border);
+      font-size:.8rem;
+      color:var(--text-secondary);
+    }
+
+    .action-row {
+      display:flex;
+      gap:1rem;
+      flex-wrap:wrap;
+      margin-top:1rem;
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,0.06);
+      color:var(--text-primary);
+      padding:.9rem 1rem;
+      border-radius:12px;
+      border:1px solid var(--border);
+    }
+
+    .progress-section,
+    .timeline-section,
+    .info-grid {
+      margin-bottom:2rem;
+    }
+
+    .progress-wrapper {
+      padding:2rem;
+      border-radius:24px;
+    }
+
+    .progress {
+      display:flex;
+      justify-content:space-between;
+      gap:1rem;
+      position:relative;
+      flex-wrap:wrap;
+    }
+
+    .step {
+      flex:1;
+      min-width:100px;
+      position:relative;
+      text-align:center;
+    }
+
+    .step:not(:last-child)::after {
+      content:'';
+      position:absolute;
+      top:18px;
+      left:58%;
+      width:100%;
+      border-top:2px dashed rgba(255,255,255,0.15);
+      z-index:0;
+    }
+
+    .step.complete:not(:last-child)::after {
+      border-top-style:solid;
+      border-color:var(--accent);
+    }
+
+    .step-node {
+      width:36px;
+      height:36px;
+      margin:0 auto 1rem;
+      border-radius:50%;
+      border:2px solid rgba(255,255,255,0.2);
+      display:grid;
+      place-items:center;
+      background:var(--bg-secondary);
+      position:relative;
+      z-index:1;
+    }
+
+    .step.complete .step-node {
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#000;
+    }
+
+    .step.current .step-node {
+      border-color:var(--accent);
+      box-shadow:0 0 0 10px rgba(245,166,35,0.08);
+      animation:pulseRing 2s infinite;
+    }
+
+    @keyframes pulseRing {
+      0% { box-shadow:0 0 0 0 rgba(245,166,35,0.3); }
+      70% { box-shadow:0 0 0 15px rgba(245,166,35,0); }
+      100% { box-shadow:0 0 0 0 rgba(245,166,35,0); }
+    }
+
+    .timeline-card {
+      border-radius:24px;
+      padding:2rem;
+      max-height:500px;
+      overflow:auto;
+    }
+
+    .timeline-item {
+      display:grid;
+      grid-template-columns:auto auto 1fr;
+      gap:1rem;
+      padding:1rem 0;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      opacity:0;
+      animation:fadeUp .5s forwards;
+    }
+
+    .timeline-item.latest {
+      border-left:3px solid var(--accent);
+      padding-left:1rem;
+    }
+
+    .timeline-marker {
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      margin-top:.35rem;
+      background:var(--accent);
+    }
+
+    .timeline-location {
+      color:var(--text-secondary);
+      margin-top:.25rem;
+      font-size:.9rem;
+    }
+
+    .info-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+    }
+
+    .info-card {
+      padding:1.5rem;
+      border-radius:20px;
+      transition:.3s;
+    }
+
+    .info-label {
+      color:var(--text-secondary);
+      margin-top:.6rem;
+      font-size:.9rem;
+    }
+
+    .error-state {
+      text-align:center;
+      padding:3rem 2rem;
+      border-radius:24px;
+    }
+
+    .modal {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+      z-index:100;
+    }
+
+    .modal.show {
+      display:flex;
+      animation:fadeIn .3s ease;
+    }
+
+    .modal-card {
+      width:min(100%, 420px);
+      border-radius:28px;
+      padding:2rem;
+      animation:scaleIn .3s var(--transition);
+    }
+
+    .form-group {
+      margin-bottom:1rem;
+    }
+
+    .form-group label {
+      display:block;
+      margin-bottom:.6rem;
+      color:var(--text-secondary);
+      font-size:.9rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width:100%;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--border);
+      color:var(--text-primary);
+      padding:1rem;
+      border-radius:14px;
+      font-family:inherit;
+      transition:.25s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(245,166,35,0.1);
+    }
+
+    .error {
+      color:var(--danger);
+      font-size:.85rem;
+      margin-top:.4rem;
+    }
+
+    .shake {
+      animation:shake .35s;
+    }
+
+    @keyframes shake {
+      0%,100% { transform:translateX(0); }
+      25% { transform:translateX(-6px); }
+      50% { transform:translateX(6px); }
+      75% { transform:translateX(-4px); }
+    }
+
+    .admin-panel {
+      display:none;
+      min-height:100vh;
+    }
+
+    .admin-layout {
+      display:grid;
+      grid-template-columns:260px 1fr;
+    }
+
+    .sidebar {
+      min-height:100vh;
+      padding:2rem 1rem;
+      border-right:1px solid var(--border);
+      position:sticky;
+      top:0;
+    }
+
+    .sidebar-item {
+      width:100%;
+      background:transparent;
+      color:var(--text-secondary);
+      text-align:left;
+      padding:1rem;
+      border-radius:14px;
+      margin-bottom:.5rem;
+      border:1px solid transparent;
+    }
+
+    .sidebar-item.active,
+    .sidebar-item:hover {
+      background:rgba(245,166,35,0.08);
+      border-color:rgba(245,166,35,0.15);
+      color:var(--text-primary);
+    }
+
+    .admin-content {
+      padding:2rem;
+    }
+
+    .admin-topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:2rem;
+      gap:1rem;
+      flex-wrap:wrap;
+    }
+
+    .kpi-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1rem;
+      margin-bottom:2rem;
+    }
+
+    .kpi-card,
+    .table-card,
+    .form-card {
+      border-radius:24px;
+      padding:1.5rem;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      min-width:720px;
+    }
+
+    th,
+    td {
+      padding:1rem;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      text-align:left;
+    }
+
+    tbody tr {
+      transition:.25s;
+    }
+
+    tbody tr:hover {
+      background:rgba(245,166,35,0.03);
+      border-left:3px solid var(--accent);
+    }
+
+    .table-wrap {
+      overflow:auto;
+    }
+
+    .hidden { display:none; }
+
+    .event-row {
+      display:grid;
+      grid-template-columns:1fr 1fr 2fr;
+      gap:1rem;
+      margin-bottom:1rem;
+    }
+
+    .footer {
+      padding:2rem 5%;
+      border-top:1px solid var(--border);
+      color:var(--text-secondary);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:1rem;
+    }
+
+    .loading-spinner {
+      width:18px;
+      height:18px;
+      border:2px solid rgba(0,0,0,0.2);
+      border-top-color:#000;
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+      display:inline-block;
+    }
+
+    @keyframes spin {
+      to { transform:rotate(360deg); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; }
+      to { opacity:1; }
+    }
+
+    @keyframes scaleIn {
+      from { opacity:0; transform:scale(.95); }
+      to { opacity:1; transform:scale(1); }
+    }
+
+    @media (max-width: 900px) {
+      .admin-layout {
+        grid-template-columns:1fr;
+      }
+
+      .sidebar {
+        min-height:auto;
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        z-index:50;
+        display:flex;
+        gap:.5rem;
+        padding:1rem;
+        background:rgba(10,10,15,0.95);
+      }
+
+      .sidebar-item {
+        margin:0;
+        text-align:center;
+        padding:.9rem .5rem;
+        font-size:.8rem;
+      }
+
+      .admin-content {
+        padding-bottom:7rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .tracking-row {
+        flex-direction:column;
+      }
+
+      .track-btn {
+        width:100%;
+      }
+
+      .stats {
+        grid-template-columns:1fr;
+      }
+
+      .progress {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .step {
+        width:100%;
+        text-align:left;
+        display:flex;
+        align-items:flex-start;
+        gap:1rem;
+      }
+
+      .step:not(:last-child)::after {
+        left:17px;
+        top:40px;
+        width:0;
+        height:60px;
+        border-top:none;
+        border-left:2px dashed rgba(255,255,255,0.15);
+      }
+
+      .step.complete:not(:last-child)::after {
+        border-left-style:solid;
+        border-color:var(--accent);
+      }
+
+      .event-row {
+        grid-template-columns:1fr;
+      }
+
+      nav {
+        gap:.8rem;
+      }
+
+      nav a { font-size:.8rem; }
+    }
+
+    @media print {
+      header,
+      .hero,
+      .footer,
+      .admin-panel,
+      .modal {
+        display:none !important;
+      }
+
+      body {
+        background:#fff;
+        color:#000;
+      }
+
+      .results {
+        display:block !important;
+        opacity:1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <header id="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-top">
+          <div class="logo-icon">➜</div>
+          TWO WAY
+        </div>
+        <div class="tagline">Cargo • Movers • Express Delivery</div>
+      </div>
+
+      <nav>
+        <a href="#">Track</a>
+        <a href="#">Support</a>
+        <a href="#" class="admin-link" id="adminTrigger">Admin Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="publicPage">
+    <section class="hero">
+      <div class="pill">
+        <div class="pulse-dot"></div>
+        ▸ Real-Time Tracking
+      </div>
+
+      <h1>Where is your <span class="accent">shipment</span>?</h1>
+      <p>Enter your AWB / Tracking Number to get live status updates</p>
+
+      <div class="tracking-card glass">
+        <div class="tracking-row">
+          <input type="text" id="trackingInput" placeholder="Enter AWB or Tracking Number">
+          <button class="track-btn" id="trackBtn">TRACK</button>
+        </div>
+
+        <div class="track-meta">
+          <span>Try: TWC100001, TWC100002, TWC100003</span>
+          <span>Press Enter ↵ to track</span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card glass">
+          <div class="stat-icon">📦</div>
+          <h3>2M+ Shipments Tracked</h3>
+          <p>Trusted logistics at scale</p>
+        </div>
+
+        <div class="stat-card glass">
+          <div class="stat-icon">⚡</div>
+          <h3>99.8% On-Time Rate</h3>
+          <p>Precision delivery network</p>
+        </div>
+
+        <div class="stat-card glass">
+          <div class="stat-icon">🌍</div>
+          <h3>180+ Cities Covered</h3>
+          <p>Nationwide distribution coverage</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="results" id="results"></section>
+  </main>
+
+  <div class="modal" id="adminModal">
+    <div class="modal-card glass" id="loginCard">
+      <h2 style="font-family: Syne, sans-serif; margin-bottom: 1.5rem;">🔒 Admin Access</h2>
+
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="adminUsername" placeholder="Enter username">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter password">
+      </div>
+
+      <div class="error hidden" id="loginError">Invalid credentials. Try admin / admin123</div>
+
+      <button class="track-btn" style="width:100%; margin-top:1rem;" id="loginBtn">Login</button>
+    </div>
+  </div>
+
+  <section class="admin-panel" id="adminPanel">
+    <div class="admin-layout">
+      <aside class="sidebar glass">
+        <button class="sidebar-item active" data-view="dashboardView">Dashboard</button>
+        <button class="sidebar-item" data-view="shipmentsView">All Shipments</button>
+        <button class="sidebar-item" data-view="addShipmentView">Add Shipment</button>
+        <button class="sidebar-item" id="logoutBtn">Logout</button>
+      </aside>
+
+      <div class="admin-content">
+        <div class="admin-topbar">
+          <div>
+            <h1 style="font-size:2rem;">Admin Panel</h1>
+            <p style="color: var(--text-secondary);">Logged in as admin</p>
+          </div>
+
+          <button class="secondary-btn" id="adminLogoutTop">Logout</button>
+        </div>
+
+        <div id="dashboardView">
+          <div class="kpi-grid" id="kpiGrid"></div>
+
+          <div class="table-card glass">
+            <h3 style="margin-bottom:1rem;">Recent Shipments</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>AWB</th>
+                    <th>Status</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="shipmentsView" class="hidden">
+          <div class="table-card glass">
+            <div style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+              <input type="text" id="searchShipment" placeholder="Search shipment" style="max-width:320px;">
+
+              <select id="statusFilter" style="max-width:220px;">
+                <option value="ALL">All Status</option>
+                <option value="BOOKED">Booked</option>
+                <option value="PICKED_UP">Picked Up</option>
+                <option value="IN_TRANSIT">In Transit</option>
+                <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="EXCEPTION">Exception</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>AWB No.</th>
+                    <th>Status</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="shipmentTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="addShipmentView" class="hidden">
+          <div class="form-card glass">
+            <h3 style="margin-bottom:1.5rem;">Shipment Form</h3>
+
+            <form id="shipmentForm">
+              <input type="hidden" id="editIndex">
+
+              <div class="kpi-grid">
+                <div class="form-group">
+                  <label>AWB Number</label>
+                  <input type="text" id="awb">
+                </div>
+
+                <div class="form-group">
+                  <label>Sender Name</label>
+                  <input type="text" id="senderName">
+                </div>
+
+                <div class="form-group">
+                  <label>Sender Phone</label>
+                  <input type="text" id="senderPhone">
+                </div>
+
+                <div class="form-group">
+                  <label>Receiver Name</label>
+                  <input type="text" id="receiverName">
+                </div>
+
+                <div class="form-group">
+                  <label>Receiver Phone</label>
+                  <input type="text" id="receiverPhone">
+                </div>
+
+                <div class="form-group">
+                  <label>Origin City</label>
+                  <input type="text" id="originCity">
+                </div>
+
+                <div class="form-group">
+                  <label>Destination City</label>
+                  <input type="text" id="destinationCity">
+                </div>
+
+                <div class="form-group">
+                  <label>Service Type</label>
+                  <select id="serviceType">
+                    <option>Express</option>
+                    <option>Standard</option>
+                    <option>Economy</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Weight (kg)</label>
+                  <input type="text" id="weight">
+                </div>
+
+                <div class="form-group">
+                  <label>Dimensions</label>
+                  <input type="text" id="dimensions">
+                </div>
+
+                <div class="form-group">
+                  <label>Expected Delivery Date</label>
+                  <input type="date" id="deliveryDate">
+                </div>
+
+                <div class="form-group">
+                  <label>Current Status</label>
+                  <select id="currentStatus">
+                    <option value="BOOKED">Booked</option>
+                    <option value="PICKED_UP">Picked Up</option>
+                    <option value="IN_TRANSIT">In Transit</option>
+                    <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="EXCEPTION">Exception</option>
+                  </select>
+                </div>
+              </div>
+
+              <h3 style="margin:1rem 0;">Timeline Events</h3>
+              <div id="eventsContainer"></div>
+
+              <button type="button" class="secondary-btn" id="addEventBtn">+ Add Event</button>
+              <button type="submit" class="track-btn" style="margin-top:1rem; width:100%;">Save Shipment</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>© 2026 TWO WAY Logistics. All rights reserved.</div>
+    <div>support@twowaycargo.in</div>
+  </footer>
+
+ <script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCOW_Y-AZrirAoW3-RIafPmNJI1dlNPmLA",
+  authDomain: "tracking-twoway.firebaseapp.com",
+  projectId: "tracking-twoway",
+  storageBucket: "tracking-twoway.firebasestorage.app",
+  messagingSenderId: "445415365945",
+  appId: "1:445415365945:web:8eecd941fa27bfaaf39ce8"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const trackingInput = document.getElementById('trackingInput');
+const trackBtn = document.getElementById('trackBtn');
+const results = document.getElementById('results');
+
+const statusSteps = [
+  'BOOKED',
+  'PICKED_UP',
+  'IN_TRANSIT',
+  'OUT_FOR_DELIVERY',
+  'DELIVERED'
+];
+
+const stepLabels = {
+  BOOKED:'Booked',
+  PICKED_UP:'Picked Up',
+  IN_TRANSIT:'In Transit',
+  OUT_FOR_DELIVERY:'Out for Delivery',
+  DELIVERED:'Delivered'
+};
+
+function formatStatus(status) {
+  return status.replaceAll('_',' ');
+}
+
+function renderTracking(shipment) {
+
+  const currentIndex = statusSteps.indexOf(shipment.status);
+
+  const progressHTML = statusSteps.map((step, index) => {
+
+    let className = 'step';
+
+    if(index < currentIndex) className += ' complete';
+
+    if(index === currentIndex) className += ' current';
+
+    return `
+      <div class="${className}">
+        <div class="step-node">
+          ${index < currentIndex ? '✓' : index + 1}
+        </div>
+
+        <div>
+          <strong>${stepLabels[step]}</strong>
+        </div>
+      </div>
+    `;
+
+  }).join('');
+
+  const timelineHTML = shipment.timeline
+  .sort((a,b) => new Date(b.datetime) - new Date(a.datetime))
+  .map((item,index) => `
+
+    <div class="timeline-item ${index === 0 ? 'latest':''}">
+
+      <div class="timeline-marker"></div>
+
+      <div class="mono">${item.datetime}</div>
+
+      <div>
+        <strong>${item.event}</strong>
+        <div class="timeline-location">
+          ${item.location}
+        </div>
+      </div>
+
+    </div>
+
+  `).join('');
+
+  results.innerHTML = `
+
+    <div class="shipment-header glass">
+
+      <div>
+
+        <p style="color:var(--text-secondary)">
+          Tracking Number
+        </p>
+
+        <h2 class="mono">
+          ${shipment.awb}
+        </h2>
+
+        <div class="status-badge status-${shipment.status}">
+          <div class="status-dot"></div>
+          ${formatStatus(shipment.status)}
+        </div>
+
+        <div class="route">
+          ${shipment.sender.city}
+          ➜
+          ${shipment.receiver.city}
+        </div>
+
+      </div>
+
+      <div>
+
+        <p style="color:var(--text-secondary)">
+          Estimated Delivery
+        </p>
+
+        <h2>${shipment.expectedDelivery}</h2>
+
+      </div>
+
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-wrapper glass">
+        <div class="progress">
+          ${progressHTML}
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-section">
+      <div class="timeline-card glass">
+
+        <h3 style="margin-bottom:1rem;">
+          Shipment Timeline
+        </h3>
+
+        ${timelineHTML}
+
+      </div>
+    </div>
+
+  `;
+
+  results.classList.add('show');
+
+}
+
+function renderError() {
+
+  results.innerHTML = `
+
+    <div class="error-state glass">
+
+      <h2>No shipment found</h2>
+
+    </div>
+
+  `;
+
+  results.classList.add('show');
+
+}
+
+async function trackShipment() {
+
+  const awb = trackingInput.value.trim().toUpperCase();
+
+  if(!awb) return;
+
+  trackBtn.innerHTML = 'Loading...';
+
+  const q = query(
+    collection(db, "shipments"),
+    where("awb", "==", awb)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  if(querySnapshot.empty) {
+
+    renderError();
+
+    trackBtn.innerHTML = 'TRACK';
+
+    return;
+
+  }
+
+  querySnapshot.forEach((doc) => {
+
+    renderTracking(doc.data());
+
+  });
+
+  trackBtn.innerHTML = 'TRACK';
+
+}
+
+trackBtn.addEventListener('click', trackShipment);
+
+trackingInput.addEventListener('keydown', e => {
+
+  if(e.key === 'Enter') {
+
+    trackShipment();
+
+  }
+
+});
+
+document.getElementById('shipmentForm')
+.addEventListener('submit', async (e) => {
+
+  e.preventDefault();
+
+  const shipment = {
+
+    awb: document.getElementById('awb').value,
+
+    status: document.getElementById('currentStatus').value,
+
+    sender: {
+
+      name: document.getElementById('senderName').value,
+
+      phone: document.getElementById('senderPhone').value,
+
+      city: document.getElementById('originCity').value
+
+    },
+
+    receiver: {
+
+      name: document.getElementById('receiverName').value,
+
+      phone: document.getElementById('receiverPhone').value,
+
+      city: document.getElementById('destinationCity').value
+
+    },
+
+    service: document.getElementById('serviceType').value,
+
+    weight: document.getElementById('weight').value,
+
+    dimensions: document.getElementById('dimensions').value,
+
+    expectedDelivery:
+      document.getElementById('deliveryDate').value,
+
+    timeline: [
+
+      {
+        datetime: new Date().toLocaleString(),
+        location: document.getElementById('originCity').value,
+        event: 'Shipment Created'
+      }
+
+    ]
+
+  };
+
+  try {
+
+    await addDoc(
+      collection(db, "shipments"),
+      shipment
+    );
+
+    alert('Shipment Saved Successfully');
+
+    e.target.reset();
+
+  } catch(error) {
+
+    console.error(error);
+
+    alert('Error saving shipment');
+
+  }
+
+});
+
+</script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCOW_Y-AZrirAoW3-RIafPmNJI1dlNPmLA",
+  authDomain: "tracking-twoway.firebaseapp.com",
+  projectId: "tracking-twoway",
+  storageBucket: "tracking-twoway.firebasestorage.app",
+  messagingSenderId: "445415365945",
+  appId: "1:445415365945:web:8eecd941fa27bfaaf39ce8"
+};
+</body>
+</html>
